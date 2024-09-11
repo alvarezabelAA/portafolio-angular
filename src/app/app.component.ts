@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, Renderer2 } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import emailjs, { EmailJSResponseStatus } from 'emailjs-com';
 
@@ -9,18 +9,55 @@ import emailjs, { EmailJSResponseStatus } from 'emailjs-com';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   title = 'portafolio-abel';
+
+  isMenuOpen = false;
+
+  constructor(private renderer: Renderer2) {}
+
+  ngOnInit() {
+    this.generateParticles();
+  }
 
   // Método para hacer scroll suave a una sección
   scrollToSection(section: string): void {
+    console.log('Sección:', section);
     const element = document.getElementById(section);
     if (element) {
-      // Desplazamiento suave usando window.scrollTo con 'behavior: smooth'
-      window.scrollTo({
-        top: element.offsetTop,
-        behavior: 'smooth',
-      });
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
+
+  generateParticles() {
+    const particleContainer = this.renderer.selectRootElement(
+      '#particles',
+      true
+    );
+    const numParticles = 100;
+
+    for (let i = 0; i < numParticles; i++) {
+      const particle = this.renderer.createElement('div');
+      this.renderer.addClass(particle, 'particle');
+      this.renderer.setStyle(particle, 'top', `${Math.random() * 100}vh`);
+      this.renderer.setStyle(particle, 'left', `${Math.random() * 100}vw`);
+      this.renderer.setStyle(particle, 'width', `${Math.random() * 5 + 2}px`);
+      this.renderer.setStyle(particle, 'height', `${Math.random() * 5 + 2}px`);
+      this.renderer.setStyle(
+        particle,
+        'animationDuration',
+        `${Math.random() * 10 + 5}s`
+      );
+      this.renderer.appendChild(particleContainer, particle);
+    }
+  }
+
+  // Método para alternar el menú en pantallas pequeñas
+  toggleMenu(): void {
+    this.isMenuOpen = !this.isMenuOpen;
+    const mobileMenu = document.getElementById('mobile-menu');
+    if (mobileMenu) {
+      mobileMenu.classList.toggle('hidden', !this.isMenuOpen);
     }
   }
 
